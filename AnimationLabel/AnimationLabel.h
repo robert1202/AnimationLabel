@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSUInteger, AnimationType) {
-    AnimationTypePushOut,
-    AnimationTypeFadeOut,
+    AnimationTypePushOut,//由下自上顶掉上一条最新内容
+    AnimationTypeFadeOut,//渐隐显示出新的一条
 };
 
 @interface AnimationLabel : UIView

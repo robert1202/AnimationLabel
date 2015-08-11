@@ -1,1 +1,4 @@
 # AnimationLabel
+可以动画切换label的效果，
+1.由下自上顶掉上一条最新内容 AnimationTypePushOut
+2.渐隐显示出新的一条 AnimationTypeFadeOut
