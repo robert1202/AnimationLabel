@@ -15,7 +15,15 @@ typedef NS_ENUM(NSUInteger, AnimationType) {
 
 @interface AnimationLabel : UIView
 
-@property (assign, nonatomic) AnimationType    animationType;
+@property (assign, nonatomic) AnimationType animationType;
+@property (strong, nonatomic) UIColor       *textColor;
+@property (strong, nonatomic) UIFont        *textFont;
+
+//动画的执行时间默认1s 最小值为0.3s
+@property (assign, nonatomic) CGFloat       animtaionDuration;
+//循环动画的时间间隔，如果为0就只执行一次，默认5s 最小值为2s
+@property (assign, nonatomic) CGFloat       animtaionCircleDuration;
+
 
 - (void)autoSliderContent:(NSArray*)values;
 

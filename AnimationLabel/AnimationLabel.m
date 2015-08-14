@@ -8,9 +8,6 @@
 
 #import "AnimationLabel.h"
 
-static const CGFloat animtaionDuration = 1.0f;
-static const CGFloat animtaionDelay    = 3.0f;
-
 @interface AnimationLabel()
 
 @property (assign, nonatomic) NSUInteger currentCount;
@@ -53,7 +50,12 @@ static const CGFloat animtaionDelay    = 3.0f;
     self.backLabel.text = values[1];
     [self prepareAnimation];
 
-    [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:animtaionDelay];
+    [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:self.animtaionCircleDuration];
+}
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
+    [self prepareAnimation];
 }
 
 #pragma mark - SetAnimationProperty
@@ -96,7 +98,7 @@ static const CGFloat animtaionDelay    = 3.0f;
     
     [self prepareAnimation];
 
-    [UIView animateWithDuration:animtaionDuration animations:^{
+    [UIView animateWithDuration:self.animtaionDuration animations:^{
         [self startAnimation];
     } completion:^(BOOL finished) {
         UILabel* tmpLabel = self.frontLabel;
@@ -115,12 +117,16 @@ static const CGFloat animtaionDelay    = 3.0f;
     if (self.currentCount >= [self.valueList count]) {
         self.currentCount = 0;
     }
-    [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:animtaionDelay];
+    [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:self.animtaionCircleDuration];
 }
 
 #pragma mark - UI
 
 - (void)initContentLabel{
+    
+    self.animtaionDuration = 1.0f;
+    self.animtaionCircleDuration = 5.0f;
+    
     self.clipsToBounds = YES;
     self.frontLabel = [[UILabel alloc] init];
     self.backLabel = [[UILabel alloc] init];
@@ -144,4 +150,25 @@ static const CGFloat animtaionDelay    = 3.0f;
     [self configLabel:self.frontLabel];
     [self configLabel:self.backLabel];
 }
+
+- (void)setTextColor:(UIColor *)textColor{
+    _textColor = textColor;
+    self.backLabel.textColor = textColor;
+    self.frontLabel.textColor = textColor;
+}
+
+- (void)setTextFont:(UIFont *)textFont{
+    _textFont = textFont;
+    self.backLabel.font = textFont;
+    self.frontLabel.font = textFont;
+}
+
+- (void)setAnimtaionDuration:(CGFloat)animtaionDuration{
+    _animtaionDuration = MIN(animtaionDuration, 0.3);
+}
+
+- (void)setAnimtaionCircleDuration:(CGFloat)animtaionCircleDuration{
+    _animtaionCircleDuration = MIN(animtaionCircleDuration, 2);
+}
+
 @end
