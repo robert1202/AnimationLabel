@@ -45,22 +45,34 @@
     self.valueList = values;
     self.frontLabel.text = [values firstObject];
     if ([values count] <= 1) {
+        self.backLabel.hidden = YES;
+        self.frontLabel.hidden = NO;
         return;
     }
+    self.backLabel.hidden = NO;
     self.backLabel.text = values[1];
+    
+    [self layoutIfNeeded];
+    [self updateConstraintsIfNeeded];
+    
     [self prepareAnimation];
-
+    
     [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:self.animtaionCircleDuration];
+}
+
+- (void)cancelTargetSelector{
+    [AnimationLabel cancelPreviousPerformRequestsWithTarget:self selector:@selector(exchangeContentLabel) object:nil];
+    [self prepareAnimation];
 }
 
 - (void)layoutSubviews{
     [super layoutSubviews];
-    [self prepareAnimation];
 }
 
 #pragma mark - SetAnimationProperty
 
 - (void)prepareAnimation{
+    
     switch (self.animationType) {
         case AnimationTypePushOut: {
             CGRect labelFrame = self.bounds;
@@ -94,29 +106,30 @@
     }
 }
 
-- (void)exchangeContentLabel{
-    
+- (void)exchangeContentLabel {
     [self prepareAnimation];
-
     [UIView animateWithDuration:self.animtaionDuration animations:^{
         [self startAnimation];
     } completion:^(BOOL finished) {
-        UILabel* tmpLabel = self.frontLabel;
+        UILabel *tmpLabel = self.frontLabel;
         self.frontLabel = self.backLabel;
         self.backLabel = tmpLabel;
         
         NSString* backString = @"";
         if (self.currentCount + 1 < [self.valueList count]) {
             backString = self.valueList[self.currentCount+1];
-        }else{
-            backString = self.valueList[0];
+        } else {
+            backString = [self.valueList objectAtIndex:0]?:@"";
         }
+        
         self.backLabel.text = backString;
     }];
+    
     self.currentCount++;
     if (self.currentCount >= [self.valueList count]) {
         self.currentCount = 0;
     }
+    
     [self performSelector:@selector(exchangeContentLabel) withObject:nil afterDelay:self.animtaionCircleDuration];
 }
 
@@ -124,12 +137,14 @@
 
 - (void)initContentLabel{
     
-    self.animtaionDuration = 1.0f;
+    self.animtaionDuration = 2.0f;
     self.animtaionCircleDuration = 5.0f;
-    
+    self.textFont = [UIFont systemFontOfSize:14];
+
     self.clipsToBounds = YES;
-    self.frontLabel = [[UILabel alloc] init];
-    self.backLabel = [[UILabel alloc] init];
+    self.frontLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 60, 17)];
+    self.backLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 60, 17)];
+    self.backLabel.alpha = 0.0f;
     
     self.animationType = AnimationTypePushOut;
     
@@ -143,18 +158,24 @@
     label.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 }
 
-#pragma mark - Reset 
+#pragma mark - Reset
 
 - (void)setAnimationType:(AnimationType)animationType{
     _animationType = animationType;
     [self configLabel:self.frontLabel];
     [self configLabel:self.backLabel];
+    [self prepareAnimation];
 }
 
 - (void)setTextColor:(UIColor *)textColor{
     _textColor = textColor;
     self.backLabel.textColor = textColor;
     self.frontLabel.textColor = textColor;
+}
+
+- (void)setTextAlignment:(NSTextAlignment)textAlignment{
+    self.backLabel.textAlignment = textAlignment;
+    self.frontLabel.textAlignment = textAlignment;
 }
 
 - (void)setTextFont:(UIFont *)textFont{
@@ -164,11 +185,11 @@
 }
 
 - (void)setAnimtaionDuration:(CGFloat)animtaionDuration{
-    _animtaionDuration = MIN(animtaionDuration, 0.3);
+    _animtaionDuration = MAX(animtaionDuration, 1);
 }
 
 - (void)setAnimtaionCircleDuration:(CGFloat)animtaionCircleDuration{
-    _animtaionCircleDuration = MIN(animtaionCircleDuration, 2);
+    _animtaionCircleDuration = MAX(animtaionCircleDuration, 2);
 }
 
 @end
